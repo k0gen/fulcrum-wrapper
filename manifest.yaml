@@ -1,0 +1,133 @@
+id: fulcrum
+title: "Fulcrum"
+version: 1.9.0
+release-notes: |
+  * Initial release of Fulcrum for embassyOS
+license: mit
+wrapper-repo: "https://github.com/chrisguida/fulcrum-wrapper"
+upstream-repo: "https://github.com/cculianu/Fulcrum"
+support-site: "https://github.com/cculianu/Fulcrum/issues"
+marketing-site: "https://github.com/cculianu/Fulcrum"
+build: ["make"]
+description:
+  short: A fast & nimble SPV Server for BCH, BTC, and LTC
+  long: |
+    A fast & nimble SPV server for Bitcoin Cash, Bitcoin BTC, and Litecoin.
+assets:
+  license: LICENSE
+  icon: icon.png
+  instructions: instructions.md
+main:
+  type: docker
+  image: main
+  entrypoint: "/entrypoint.sh"
+  args: []
+  mounts:
+    main: /data
+health-checks:
+  electrum:
+    name: Electrum RPC Interface
+    success-message: The electrum RPC interface is alive and responding to basic commands.
+    type: docker
+    image: main
+    entrypoint: "check-electrum.sh"
+    args: []
+    inject: true
+    system: false
+    io-format: json
+  synced:
+    name: Synced
+    success-message: The indexes are built and the electrum interface is fully operational. You may now connect a wallet.
+    type: docker
+    image: main
+    entrypoint: "check-synced.sh"
+    args: []
+    inject: true
+    system: false
+    io-format: json
+config:
+  get:
+    type: script
+  set:
+    type: script
+properties:
+  type: script
+volumes:
+  main:
+    type: data
+interfaces:
+  electrum:
+    name: Electrum Interface
+    description: Serves an electrum API for use with compatible wallets
+    tor-config:
+      port-mapping:
+        50001: "50001"
+    # lan-config:
+    #   443:
+    #     ssl: true
+    #     internal: 50001
+    ui: false
+    protocols:
+      - tcp
+      - http
+      - electrum
+alerts: {}
+dependencies:
+  btc-rpc-proxy:
+    version: ">=0.3.2.1 <0.4.0"
+    requirement:
+      type: "opt-out"
+      how: Set "Bitcoin Core" to 'Bitcoin Core'"
+    description: Provides bitcoin rpc interface needed for info about fees, blockchain, mempool, network, and transactions. Can also use bitcoind for rpc interface, or an external node for both.
+    config:
+      check:
+        type: script
+      auto-configure:
+        type: script
+  bitcoind:
+    version: ">=0.21.1.2 <26.0.0"
+    requirement:
+      type: "opt-out"
+      how: Set "Bitcoin Core" type to "External"
+    description: Needed for peer interface and rpc interface. Can also use btc-rpc-proxy for rpc interface, or an external node for both.
+    config:
+      check:
+        type: script
+      auto-configure:
+        type: script
+backup:
+  create:
+    type: docker
+    image: compat
+    system: true
+    entrypoint: compat
+    args:
+      - duplicity
+      - create
+      - /mnt/backup
+      - /data
+    mounts:
+      BACKUP: /mnt/backup
+      main: /data
+  restore:
+    type: docker
+    image: compat
+    system: true
+    entrypoint: compat
+    args:
+      - duplicity
+      - restore
+      - /mnt/backup
+      - /data
+    mounts:
+      BACKUP: /mnt/backup
+      main: /data
+migrations:
+  from:
+    "*":
+      type: script
+      args: ["from"]
+  to:
+    "*":
+      type: script
+      args: ["to"]

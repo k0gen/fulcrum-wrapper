@@ -24,7 +24,7 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
       },
       "description": "Options<ul><li>Bitcoin Core: the Bitcoin Core node installed on your Embassy</li><li>Bitcoin Proxy: the Bitcoin Proxy service installed on your Embassy</li></ul>",
     },
-    "default": "internal-proxy",
+    "default": "internal",
     "variants": {
       "internal": {
         "user": {
@@ -72,4 +72,39 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
       }
     }
   },
+  "advanced": {
+    "type": "object",
+    "name": "Advanced",
+    "description": "Advanced settings for Fulcrum",
+    "spec": {
+      // "log-filters": {
+      //   "type": "enum",
+      //   "name": "Log Filters",
+      //   "values": [
+      //     "ERROR",
+      //     "WARN",
+      //     "INFO",
+      //     "DEBUG",
+      //     "TRACE"
+      //   ],
+      //   "value-names": {
+      //     "ERROR": "Error",
+      //     "WARN": "Warning",
+      //     "INFO": "Info",
+      //     "DEBUG": "Debug",
+      //     "TRACE": "Trace"
+      //   },
+      //   "default": "INFO"
+      // },
+      "fast-sync": {
+        "type": "number",
+        "name": "Fast Sync MB",
+        "description": "https://github.com/cculianu/Fulcrum/blob/feb8f6a8dd361422f8388e77978a55e38ddb5ca0/doc/fulcrum-example-config.conf#L685-L701",
+        "nullable": true,
+        "range": "[1,*)",
+        "integral": true,
+        "units": "MB"
+      },
+    }
+  }
 })

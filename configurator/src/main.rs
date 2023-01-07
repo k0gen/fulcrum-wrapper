@@ -35,15 +35,14 @@ fn parse_quick_connect_url(url: Uri) -> Result<(String, String, String, u16), an
 #[serde(rename_all = "kebab-case")]
 struct Config {
     bitcoind: BitcoinCoreConfig,
-    // advanced: AdvancedConfig,
+    advanced: AdvancedConfig,
 }
 
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 struct AdvancedConfig {
-    log_filters: String,
-    index_batch_size: Option<u16>,
-    index_lookup_limit: Option<u16>,
+    // log_filters: String,
+    fast_sync: Option<u16>,
 }
 
 #[derive(serde::Deserialize)]
@@ -130,6 +129,14 @@ fn main() -> Result<(), anyhow::Error> {
                 }
             };
 
+        let mut fast_sync: String = "".to_string();
+        if config.advanced.fast_sync.is_some() {
+            fast_sync = format!(
+                "fast-sync = {}",
+                config.advanced.fast_sync.unwrap()
+            );
+        }
+
         write!(
             outfile,
             include_str!("fulcrum.conf.template"),
@@ -137,6 +144,7 @@ fn main() -> Result<(), anyhow::Error> {
             bitcoin_rpc_pass = bitcoin_rpc_pass,
             bitcoin_rpc_host = bitcoin_rpc_host,
             bitcoin_rpc_port = bitcoin_rpc_port,
+            fast_sync = fast_sync,
         )?;
     }
 

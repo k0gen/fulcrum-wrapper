@@ -20,7 +20,7 @@ assets:
 main:
   type: docker
   image: main
-  entrypoint: "/entrypoint.sh"
+  entrypoint: "docker_entrypoint.sh"
   args: []
   mounts:
     main: /data

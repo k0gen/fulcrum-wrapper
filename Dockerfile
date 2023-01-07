@@ -15,10 +15,12 @@ COPY ./Fulcrum .
 RUN qmake -makefile PREFIX=/usr Fulcrum.pro && \
     make $MAKEFLAGS install
 
+RUN strip Fulcrum
+
 FROM debian:bullseye-slim
 
 RUN apt update && \
-    apt install -y openssl libqt5network5 zlib1g libbz2-1.0 libjemalloc2 libzmq5 tini && \
+    apt install -y openssl libqt5network5 zlib1g libbz2-1.0 libjemalloc2 libzmq5 tini wget && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -32,7 +34,12 @@ ENV SSL_KEYFILE ${DATA_DIR}/fulcrum.key
 
 EXPOSE 50001 50002
 
-COPY ./Fulcrum/contrib/docker/docker-entrypoint.sh /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+ARG PLATFORM
+ARG ARCH
+RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${PLATFORM} && chmod +x /usr/local/bin/yq
+ADD ./configurator/target/${ARCH}-unknown-linux-musl/release/configurator /usr/local/bin/configurator
+COPY ./docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
+RUN chmod a+x /usr/local/bin/docker_entrypoint.sh
+# ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["Fulcrum"]
+# CMD ["Fulcrum"]

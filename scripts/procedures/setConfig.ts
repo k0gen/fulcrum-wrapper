@@ -1,5 +1,13 @@
-// This is where any configuration rules related to the configuration would go. These ensure that the user can only create a valid config.
+import {
+    compat,
+    types as T,
+  } from "../deps.ts";
 
-import { compat, } from "../deps.ts";
+  // deno-lint-ignore no-explicit-any
+  export const setConfig: T.ExpectedExports.setConfig = async (effects, input: any) => {
 
-export const setConfig = compat.setConfig;
+    const depBitcoin: T.DependsOn = input?.bitcoind?.type === "internal" || input?.bitcoind?.type === "internal-proxy" ? { bitcoind: ["synced"] } : {}
+    return await compat.setConfig(effects, input, {
+      ...depBitcoin
+    });
+  }

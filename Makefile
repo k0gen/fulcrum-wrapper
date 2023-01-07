@@ -1,5 +1,5 @@
 VERSION := $(shell yq e ".version" manifest.yaml)
-FULCRUM_SRC := $(shell find ./Fulcrum/src) Fulcrum/Cargo.toml Fulcrum/Cargo.lock
+FULCRUM_SRC := $(shell find ./Fulcrum/src)
 CONFIGURATOR_SRC := $(shell find ./configurator/src) configurator/Cargo.toml configurator/Cargo.lock
 PKG_VERSION := $(shell yq e ".version" manifest.yaml)
 PKG_ID := $(shell yq e ".id" manifest.yaml)
@@ -29,7 +29,7 @@ arm: docker-images/aarch64.tar scripts/embassy.js
 x86: docker-images/x86_64.tar scripts/embassy.js
 	embassy-sdk pack
 
-$(PKG_ID).s9pk: manifest.yaml instructions.md scripts/embassy.js fulcrum/LICENSE docker-images/aarch64.tar docker-images/x86_64.tar
+$(PKG_ID).s9pk: manifest.yaml instructions.md scripts/embassy.js fulcrum/LICENSE.txt docker-images/aarch64.tar docker-images/x86_64.tar
 	embassy-sdk pack
 
 docker-images/aarch64.tar: Dockerfile docker_entrypoint.sh configurator/target/aarch64-unknown-linux-musl/release/configurator $(FULCRUM_SRC)
@@ -48,3 +48,6 @@ configurator/target/x86_64-unknown-linux-musl/release/configurator: $(CONFIGURAT
 
 scripts/embassy.js: $(TS_FILES)
 	deno bundle scripts/embassy.ts scripts/embassy.js
+
+fulcrum/LICENSE.txt:
+	git submodule update --init

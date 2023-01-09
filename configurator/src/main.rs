@@ -41,7 +41,11 @@ struct Config {
 #[derive(Deserialize)]
 #[serde(rename_all = "kebab-case")]
 struct AdvancedConfig {
-    // log_filters: String,
+    bitcoind_timeout: Option<u16>,
+    bitcoind_clients: Option<u16>,
+    worker_threads: Option<u16>,
+    db_mem: Option<u16>,
+    db_max_open_files: Option<u16>,
     fast_sync: Option<u16>,
 }
 
@@ -129,6 +133,46 @@ fn main() -> Result<(), anyhow::Error> {
                 }
             };
 
+        let mut bitcoind_timeout: String = "".to_string();
+        if config.advanced.bitcoind_timeout.is_some() {
+            bitcoind_timeout = format!(
+                "bitcoind_timeout = {}",
+                config.advanced.bitcoind_timeout.unwrap()
+            );
+        }
+
+        let mut bitcoind_clients: String = "".to_string();
+        if config.advanced.bitcoind_clients.is_some() {
+            bitcoind_clients = format!(
+                "bitcoind_clients = {}",
+                config.advanced.bitcoind_clients.unwrap()
+            );
+        }
+
+        let mut worker_threads: String = "".to_string();
+        if config.advanced.worker_threads.is_some() {
+            worker_threads = format!(
+                "worker_threads = {}",
+                config.advanced.worker_threads.unwrap()
+            );
+        }
+
+        let mut db_mem: String = "".to_string();
+        if config.advanced.db_mem.is_some() {
+            db_mem = format!(
+                "db_mem = {}",
+                config.advanced.db_mem.unwrap()
+            );
+        }
+
+        let mut db_max_open_files: String = "".to_string();
+        if config.advanced.db_max_open_files.is_some() {
+            db_max_open_files = format!(
+                "db_max_open_files = {}",
+                config.advanced.db_max_open_files.unwrap()
+            );
+        }
+
         let mut fast_sync: String = "".to_string();
         if config.advanced.fast_sync.is_some() {
             fast_sync = format!(
@@ -144,6 +188,11 @@ fn main() -> Result<(), anyhow::Error> {
             bitcoin_rpc_pass = bitcoin_rpc_pass,
             bitcoin_rpc_host = bitcoin_rpc_host,
             bitcoin_rpc_port = bitcoin_rpc_port,
+            bitcoind_timeout = bitcoind_timeout,
+            bitcoind_clients = bitcoind_clients,
+            worker_threads = worker_threads,
+            db_mem = db_mem,
+            db_max_open_files = db_max_open_files,
             fast_sync = fast_sync,
         )?;
     }

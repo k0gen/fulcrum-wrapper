@@ -1,8 +1,7 @@
 # Wrapper for fulcrum
 
-Fulcrum is a simple, minimal project that serves as a template for creating a
-service that runs on embassyOS. This repository creates the `s9pk` package that
-is installed to run `fulcrum` on
+Fulcrum is a drop-in replacement for ElectronX/ElectrumX server that runs on embassyOS.
+This repository creates the `s9pk` package that is installed to run `fulcrum` on
 [embassyOS](https://github.com/Start9Labs/embassy-os/). Learn more about service
 packaging in the [Developer Docs](https://start9.com/latest/developer-docs/).
 
